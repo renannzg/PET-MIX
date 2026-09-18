@@ -199,7 +199,7 @@ As datas seguem o cronograma definido no edital do Projeto Integrador IV.
 O relatório referente à **C1** está disponível na pasta:
 
 ```text
-docs/relatorio-C1.pdf
+docs/relatório (2).pdf
 ```
 
 ---
