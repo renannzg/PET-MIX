@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Mix - Assistente Virtual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h3>Perfil do Pet (Opcional)</h3>
+            <label for="pet-nome">Nome:</label>
+            <input type="text" id="pet-nome" placeholder="Ex: Thor">
+            
+            <label for="pet-especie">Espécie:</label>
+            <input type="text" id="pet-especie" placeholder="Ex: Cachorro">
+            
+            <label for="pet-porte">Porte:</label>
+            <select id="pet-porte">
+                <option value="Pequeno">Pequeno</option>
+                <option value="Médio">Médio</option>
+                <option value="Grande">Grande</option>
+            </select>
+            <button id="save-pet-btn">Salvar Perfil</button>
+            <p id="pet-status"></p>
+        </div>
+        
+        <div class="chat-container">
+            <h2>Atendimento Pet Mix</h2>
+            <div id="chat-box" class="chat-box">
+                <div class="message system">Olá! Sou o assistente virtual do Pet Mix. Como posso ajudar você e seu pet hoje?</div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+                <button id="send-btn">Enviar</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
