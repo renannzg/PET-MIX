@@ -1,8 +1,8 @@
 import pytest
 from backend.ai_agent import chat_with_agent, _query_db
 
-# Mocked responses for evaluating the component behavior
-# In a real eval, we'd invoke chat_with_agent with a valid GROQ_API_KEY.
+# Respostas simuladas para avaliar o comportamento do componente
+# Em uma avaliação real, invocaríamos a função chat_with_agent com uma GROQ_API_KEY válida.
 
 def test_db_functions():
     """Testa se as funções de banco de dados retornam os valores corretos (grounding)."""
