@@ -23,16 +23,16 @@ class ChatResponse(BaseModel):
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
     try:
-        # Build message history
+        # Constrói histórico de mensagens
         messages = request.history + [{"role": "user", "content": request.message}]
         
-        # Call AI agent
+        # Chama agente de IA
         reply = chat_with_agent(messages, request.pet_context)
         return {"response": reply}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Mount frontend static files
+# Montar os arquivos estáticos do frontend
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")

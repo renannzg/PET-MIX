@@ -27,11 +27,11 @@ async function sendMessage() {
     
     if (!message) return;
     
-    // Add user message to UI
+    // Adicionar a mensagem do usuário à interface
     addMessageToUI(message, 'user');
     inputEl.value = '';
     
-    // Add typing indicator
+    // Adicionar indicador de digitação
     const typingId = addMessageToUI('...', 'system', true);
     
     try {
@@ -49,13 +49,13 @@ async function sendMessage() {
         
         const data = await response.json();
         
-        // Remove typing indicator
+        // Remover indicador de digitação
         document.getElementById(typingId).remove();
         
         if (response.ok) {
             addMessageToUI(data.response, 'system');
             
-            // Update history
+            // Atualizar histórico
             chatHistory.push({ role: 'user', content: message });
             chatHistory.push({ role: 'assistant', content: data.response });
         } else {
