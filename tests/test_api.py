@@ -9,7 +9,7 @@ def test_chat_endpoint_structure():
         "history": [],
         "pet_context": None
     })
-    # This might fail with 500 if no API key is provided, but we can at least check if endpoint exists
+    # Isso pode falhar com erro 500 se nenhuma chave de API for fornecida, mas pelo menos podemos verificar se o endpoint existe.
     assert response.status_code in [200, 500] 
     if response.status_code == 200:
         assert "response" in response.json()
