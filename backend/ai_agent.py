@@ -62,7 +62,7 @@ def consultar_horario():
     query = "SELECT dia_semana, abertura, fechamento FROM horarios"
     return _query_db(query)
 
-# Map tool names to functions
+# Mapear nomes de ferramentas para funções
 available_tools = {
     "buscar_produto": buscar_produto,
     "buscar_servico": buscar_servico,
@@ -144,7 +144,7 @@ Se o cliente tiver um perfil de pet (contexto), utilize isso para personalizar a
 """
 
 def chat_with_agent(messages, pet_context=None):
-    # Prepare system message
+    # Prepara mensagem do sistema
     system_msg = {"role": "system", "content": SYSTEM_PROMPT}
     if pet_context:
         system_msg["content"] += f"\nContexto do animal do cliente: Nome={pet_context.get('nome')}, Espécie={pet_context.get('especie')}, Porte={pet_context.get('porte')}."
@@ -163,7 +163,7 @@ def chat_with_agent(messages, pet_context=None):
     tool_calls = response_message.tool_calls
 
     if tool_calls:
-        # Append the assistant's message with tool calls to conversation
+        # Adicionar a mensagem do assistente com chamadas de ferramenta à conversa
         conversation.append(response_message)
         
         for tool_call in tool_calls:
@@ -183,7 +183,7 @@ def chat_with_agent(messages, pet_context=None):
                     }
                 )
         
-        # Get final response from the model
+        # Obter a resposta final do modelo
         second_response = client.chat.completions.create(
             model="qwen/qwen3.8-27b",
             messages=conversation,
