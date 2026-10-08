@@ -7,7 +7,7 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Create tables
+    # Cria tabelas
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS produtos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,12 +37,12 @@ def init_db():
     )
     ''')
 
-    # Clear old data if any
+    # Limpar dados antigos, se houver
     cursor.execute('DELETE FROM produtos')
     cursor.execute('DELETE FROM servicos')
     cursor.execute('DELETE FROM horarios')
 
-    # Insert dummy data
+    # Inserir dados de exemplo
     produtos = [
         ('Ração Premier Cães Adultos 15kg', 'Alimentação', 189.90, 'Ração premium para cães adultos', 10),
         ('Ração Golden Gatos Castrados 3kg', 'Alimentação', 45.50, 'Ração para gatos castrados', 15),
