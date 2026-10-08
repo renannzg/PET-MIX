@@ -51,7 +51,7 @@ pytest tests/
 pytest eval/
 ```
 
-## Viabilidade Técnica (Checklist C2)
+## Viabilidade Técnica (Checklist)
 - [x] Backend e Frontend operacionais.
 - [x] Banco de dados estruturado com os serviços e produtos.
 - [x] Agente de IA integrado com LLM (via Groq API).
