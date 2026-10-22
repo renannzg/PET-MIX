@@ -23,16 +23,20 @@ class ChatResponse(BaseModel):
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
     try:
-        # Constrói histórico de mensagens
-        messages = request.history + [{"role": "user", "content": request.message}]
+        # Mantém no máximo as últimas 6 mensagens do histórico para economizar tokens
+        history_trimmed = request.history[-6:] if len(request.history) > 6 else request.history
+        messages = history_trimmed + [{"role": "user", "content": request.message}]
         
-        # Chama agente de IA
+        # Call AI agent
         reply = chat_with_agent(messages, request.pet_context)
         return {"response": reply}
     except Exception as e:
+        print(f"[ERRO NO ENDPOINT /api/chat]: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-# Montar os arquivos estáticos do frontend
+# Mount frontend static files
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
