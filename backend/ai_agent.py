@@ -4,13 +4,26 @@ import sqlite3
 from groq import Groq
 from dotenv import load_dotenv
 
+# Busca e carrega o arquivo .env de múltiplos caminhos possíveis
+env_candidates = [
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"),
+    os.path.join(os.getcwd(), ".env"),
+    os.path.join(os.getcwd(), "PetMix", ".env"),
+]
+for path in env_candidates:
+    if os.path.exists(path):
+        load_dotenv(path)
 load_dotenv()
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "database", "petshop.db")
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "database", "petshop.db")
 
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY", "your_groq_api_key_here"),
-)
+def get_groq_client():
+    api_key = os.environ.get("GROQ_API_KEY", "").strip()
+    if not api_key or "sua_chave" in api_key or "your_groq" in api_key:
+        raise ValueError(
+            "GROQ_API_KEY não foi encontrada ou ainda está com o texto padrão. Preencha sua chave real no arquivo .env."
+        )
+    return Groq(api_key=api_key)
 
 def _query_db(query, args=(), fetchall=True):
     try:
@@ -62,7 +75,7 @@ def consultar_horario():
     query = "SELECT dia_semana, abertura, fechamento FROM horarios"
     return _query_db(query)
 
-# Mapear nomes de ferramentas para funções
+# Map tool names to functions
 available_tools = {
     "buscar_produto": buscar_produto,
     "buscar_servico": buscar_servico,
@@ -143,7 +156,23 @@ Seja educado, simpático e direto nas respostas.
 Se o cliente tiver um perfil de pet (contexto), utilize isso para personalizar a resposta.
 """
 
+MODEL_NAME = "openai/gpt-oss-20b"
+FALLBACK_MODEL = "qwen/qwen3.8-27b"
+
+def _call_groq(client, model, messages, tools=None, max_tokens=500):
+    kwargs = {
+        "model": model,
+        "messages": messages,
+        "max_tokens": max_tokens,
+    }
+    if tools:
+        kwargs["tools"] = tools
+        kwargs["tool_choice"] = "auto"
+    return client.chat.completions.create(**kwargs)
+
 def chat_with_agent(messages, pet_context=None):
+    client = get_groq_client()
+    
     # Prepara mensagem do sistema
     system_msg = {"role": "system", "content": SYSTEM_PROMPT}
     if pet_context:
@@ -151,19 +180,18 @@ def chat_with_agent(messages, pet_context=None):
     
     conversation = [system_msg] + messages
 
-    response = client.chat.completions.create(
-        model="qwen/qwen3.8-27b",
-        messages=conversation,
-        tools=tools_definition,
-        tool_choice="auto",
-        max_tokens=1024
-    )
+    try:
+        response = _call_groq(client, MODEL_NAME, conversation, tools=tools_definition, max_tokens=500)
+    except Exception as e:
+        # Fallback para o modelo secundário se o primeiro atingir rate limit ou instabilidade
+        print(f"[Aviso] Falha com {MODEL_NAME}: {e}. Tentando fallback com {FALLBACK_MODEL}...")
+        response = _call_groq(client, FALLBACK_MODEL, conversation, tools=tools_definition, max_tokens=400)
 
     response_message = response.choices[0].message
     tool_calls = response_message.tool_calls
 
     if tool_calls:
-        # Adicionar a mensagem do assistente com chamadas de ferramenta à conversa
+        # Append the assistant's message with tool calls to conversation
         conversation.append(response_message)
         
         for tool_call in tool_calls:
@@ -183,13 +211,13 @@ def chat_with_agent(messages, pet_context=None):
                     }
                 )
         
-        # Obter a resposta final do modelo
-        second_response = client.chat.completions.create(
-            model="qwen/qwen3.8-27b",
-            messages=conversation,
-            max_tokens=1024
-        )
-        return second_response.choices[0].message.content
+        # Get final response from the model
+        try:
+            second_response = _call_groq(client, MODEL_NAME, conversation, max_tokens=500)
+        except Exception as e:
+            second_response = _call_groq(client, FALLBACK_MODEL, conversation, max_tokens=400)
+            
+        return second_response.choices[0].message.content or "Operação realizada com sucesso."
     
-    return response_message.content
+    return response_message.content or "Olá! Como posso ajudar você e seu pet hoje?"
 
