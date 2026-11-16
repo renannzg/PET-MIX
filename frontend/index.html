@@ -3,40 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pet Mix - Assistente Virtual</title>
+    <title>Pet Mix - Assistente Inteligente para Pet Shops</title>
+    <!-- Fonte Inter e Marked.js para renderização de Markdown nas respostas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <h3>Perfil do Pet (Opcional)</h3>
-            <label for="pet-nome">Nome:</label>
-            <input type="text" id="pet-nome" placeholder="Ex: Thor">
-            
-            <label for="pet-especie">Espécie:</label>
-            <input type="text" id="pet-especie" placeholder="Ex: Cachorro">
-            
-            <label for="pet-porte">Porte:</label>
-            <select id="pet-porte">
-                <option value="Pequeno">Pequeno</option>
-                <option value="Médio">Médio</option>
-                <option value="Grande">Grande</option>
-            </select>
-            <button id="save-pet-btn">Salvar Perfil</button>
-            <p id="pet-status"></p>
-        </div>
-        
-        <div class="chat-container">
-            <h2>Atendimento Pet Mix</h2>
+    <div class="app-layout">
+        <!-- Barra Lateral: Perfil do Pet e Informações -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">🐾</div>
+                <div class="brand-text">
+                    <h1>Pet Mix</h1>
+                    <span>Assistente Inteligente</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="status-indicator">
+                    <span class="dot"></span>
+                    <span class="status-text">IA Ativa (Groq LLaMA/GPT)</span>
+                </div>
+                <div class="engine-badge">Grounding SQLite + RAG</div>
+            </div>
+
+            <div class="card pet-card">
+                <h3>🐶 Perfil do Seu Pet</h3>
+                <p class="card-desc">Personalize o atendimento para receber preços e rações ideais para o seu animal.</p>
+                
+                <div class="form-group">
+                    <label for="pet-nome">Nome do Pet</label>
+                    <input type="text" id="pet-nome" placeholder="Ex: Thor, Mel, Bob">
+                </div>
+
+                <div class="form-group">
+                    <label for="pet-especie">Espécie</label>
+                    <select id="pet-especie">
+                        <option value="Cachorro">Cachorro</option>
+                        <option value="Gato">Gato</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pet-porte">Porte do Animal</label>
+                    <select id="pet-porte">
+                        <option value="Pequeno">Pequeno (até 10kg - Banho P)</option>
+                        <option value="Médio" selected>Médio (10kg a 25kg - Banho M)</option>
+                        <option value="Grande">Grande (acima de 25kg - Banho G)</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button id="save-pet-btn" class="btn btn-primary">Salvar Perfil</button>
+                    <button id="clear-pet-btn" class="btn btn-secondary">Limpar</button>
+                </div>
+                <div id="pet-badge-active" class="pet-badge-active" style="display: none;">
+                    Perfil Ativo: <strong id="active-pet-info"></strong>
+                </div>
+            </div>
+
+            <div class="info-footer">
+                <p><strong>Projeto Integrador IV</strong> (C3 - MVP)</p>
+                <p>FAESA Vitória • 2026</p>
+                <p class="authors">Matheus Rhamet & Renan Miguel</p>
+            </div>
+        </aside>
+
+        <!-- Área Principal de Chat -->
+        <main class="chat-main">
+            <!-- Cabeçalho do Chat -->
+            <header class="chat-header">
+                <div class="header-info">
+                    <h2>Atendimento Virtual Pet Mix</h2>
+                    <p>Tire dúvidas sobre produtos, preços, serviços, horários e regras em tempo real.</p>
+                </div>
+                <button id="clear-chat-btn" class="btn-icon" title="Limpar conversa">
+                    🗑️ Limpar Chat
+                </button>
+            </header>
+
+            <!-- Histórico de Mensagens -->
             <div id="chat-box" class="chat-box">
-                <div class="message system">Olá! Sou o assistente virtual do Pet Mix. Como posso ajudar você e seu pet hoje?</div>
+                <div class="message assistant">
+                    <div class="avatar">🐾</div>
+                    <div class="bubble">
+                        <p>Olá! Sou o assistente virtual do <strong>Pet Mix</strong>! 🐶🐱</p>
+                        <p>Posso te ajudar a consultar horários de funcionamento, serviços de banho e tosa, rações em estoque, regras de vacinação e formas de pagamento.</p>
+                        <p><em>Como posso ajudar você e seu pet hoje?</em></p>
+                    </div>
+                </div>
             </div>
-            <div class="input-area">
-                <input type="text" id="user-input" placeholder="Digite sua mensagem...">
-                <button id="send-btn">Enviar</button>
+
+            <!-- Sugestões Rápidas (Chips) -->
+            <div class="quick-chips">
+                <button class="chip" data-query="Quanto custa o banho e a tosa?">🐾 Preços de Banho e Tosa</button>
+                <button class="chip" data-query="Qual o horário de funcionamento no sábado?">🕒 Horário de Sábado</button>
+                <button class="chip" data-query="Quais rações vocês têm disponíveis em estoque?">🍖 Rações Disponíveis</button>
+                <button class="chip" data-query="Quais vacinas são exigidas para o banho?">📋 Regras de Vacinação</button>
+                <button class="chip" data-query="Vocês aceitam PIX e parcelam compras?">💳 Formas de Pagamento</button>
+                <button class="chip" data-query="Como funciona a tele-entrega e o frete?">🚚 Entrega em Casa</button>
             </div>
-        </div>
+
+            <!-- Área de Digitação -->
+            <div class="input-container">
+                <form id="chat-form" onsubmit="event.preventDefault(); sendMessage();">
+                    <input 
+                        type="text" 
+                        id="user-input" 
+                        placeholder="Digite sua dúvida (ex: 'Quanto custa o banho M?', 'Vocês entregam?')..." 
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="submit" id="send-btn" class="btn-send" title="Enviar Mensagem">
+                        <span>Enviar</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </main>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
