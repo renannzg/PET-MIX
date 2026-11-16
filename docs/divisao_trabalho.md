@@ -32,7 +32,7 @@ Para que o histórico de commits do repositório demonstre formalmente a partici
 ### Para commits realizados por Matheus Rhamet:
 ```bash
 git config user.name "Matheus Rhamet"
-git config user.email "matheus.rhamet@exemplo.com" # (coloque seu e-mail do GitHub)
+git config user.email "gamessa1000@gmail.com"
 git add backend/ eval/ docs/
 git commit -m "feat(ia-eval): implementa harness de avaliacao quantitativa e grounding"
 ```
@@ -40,7 +40,7 @@ git commit -m "feat(ia-eval): implementa harness de avaliacao quantitativa e gro
 ### Para commits realizados por Renan Miguel:
 ```bash
 git config user.name "Renan Miguel"
-git config user.email "renan.miguel@exemplo.com" # (coloque seu e-mail do GitHub)
+git config user.email "miguelrenan618@gmail.com" 
 git add frontend/ database/ tests/ Procfile render.yaml Dockerfile
 git commit -m "feat(frontend-deploy): moderniza interface web e configura deploy no Render"
 ```
